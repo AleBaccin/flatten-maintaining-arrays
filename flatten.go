@@ -4,14 +4,17 @@ import (
 	"encoding/json"
 	"errors"
 	"regexp"
-	"strconv"
 )
 
 // The style of keys.  If there is an input with two
 // nested keys "f" and "g", with "f" at the root,
-//    { "f": { "g": ... } }
+//
+//	{ "f": { "g": ... } }
+//
 // the output will be the concatenation
-//    f{Middle}{Before}g{After}...
+//
+//	f{Middle}{Before}g{After}...
+//
 // Any struct element may be blank.
 // If you use Middle, you will probably leave Before & After blank, and vice-versa.
 // See examples in flatten_test.go and the "Default styles" here.
@@ -88,7 +91,7 @@ func FlattenString(nestedstr, prefix string, style SeparatorStyle) (string, erro
 func flatten(top bool, flatMap map[string]interface{}, nested interface{}, prefix string, style SeparatorStyle) error {
 	assign := func(newKey string, v interface{}) error {
 		switch v.(type) {
-		case map[string]interface{}, []interface{}:
+		case map[string]interface{}: //, []interface{}:
 			if err := flatten(false, flatMap, v, newKey, style); err != nil {
 				return err
 			}
@@ -105,11 +108,13 @@ func flatten(top bool, flatMap map[string]interface{}, nested interface{}, prefi
 			newKey := enkey(top, prefix, k, style)
 			assign(newKey, v)
 		}
-	case []interface{}:
-		for i, v := range nested.([]interface{}) {
-			newKey := enkey(top, prefix, strconv.Itoa(i), style)
-			assign(newKey, v)
-		}
+	// case []interface{}:
+	// 	// newKey := enkey(top, prefix, "", style)
+	// 	// assign(newKey, nested)
+	// 	for _, v := range nested.([]interface{}) {
+	// 		newKey := enkey(top, prefix, "", style)
+	// 		assign(newKey, v)
+	// 	}
 	default:
 		return NotValidInputError
 	}
