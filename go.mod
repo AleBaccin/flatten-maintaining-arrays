@@ -1,1 +1,1 @@
-module github.com/jeremywohl/flatten
+module github.com/alebaccin/flatten-maintaining-arrays
